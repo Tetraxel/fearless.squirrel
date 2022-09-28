@@ -113,6 +113,7 @@ function player_falling() {
             && (y < mtileY)) {
             // player1.graphic.position.z += 1;
                player1.dead();
+               player1.life -=1;
         }
         else {
             // player1.graphic.position.z += 0.0001;
