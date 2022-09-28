@@ -23,10 +23,39 @@ function init()
     $container.append(renderer.domElement);
 
     noGround = [];
+    groundTiles = [];
     ground = new Ground(0xffffff, WIDTH, HEIGHT, 10);
+
+    console.log(groundTiles)
+    const half = Math.ceil(groundTiles.length / 2);
+    newGroundTiles = (groundTiles.slice(half)).concat(groundTiles.slice(0, half))
+    groundTiles = newGroundTiles
+    console.log(groundTiles)
     
-    player1 = new Player("player1", 0xffff00, new THREE.Vector2(50, 0), 0);
+
+    coords = [50, 0]
+    for (let i = 0; i < groundTiles.length; i++) {
+        const el1 = groundTiles[i];
+        var ok = true
+        for (let j = 0; j < noGround.length; j++) {
+            const el2 = noGround[j];
+            if (el1[0] == el2[0] && el1[1] == el2[1]) {
+                ok = false
+                break
+            }
+        }
+        if (ok) {
+            coords = groundTiles[i]
+            break
+        }
+    }
+    console.log(coords)
+    
+    player1 = new Player("player1", 0xffff00, new THREE.Vector2(coords[0], coords[1]), 0);
     scene.add(player1.graphic);
+    
+    ennemy1 = new Ennemy("ennemy1", 0xff00ff, new THREE.Vector2(0, 0), 0);
+    scene.add(ennemy1.graphic);
 
     light1 = new Light("sun", 0xffffff, "0,0,340");
     scene.add(light1);
@@ -37,11 +66,11 @@ function Ground(color, size_x, size_y, nb_tile)
     colors = Array(0xff0000, 0x00ff00, 0x0000ff, 0x000000);
 
     sizeOfTileX = size_x / nb_tile;
-    minX = -(size_x/2);
+    minX = -(size_x/2) - 10;
     maxX = (size_x/2);
     
     sizeOfTileY = size_y / nb_tile;
-    minY = -(size_y/2);
+    minY = -(size_y/2) - 10;
     maxY = (size_y/2);
 
     for (x = minX; x <= maxX; x = x+sizeOfTileX){
@@ -57,16 +86,19 @@ function Ground(color, size_x, size_y, nb_tile)
                 tmpGround.position.x = x;
                 tmpGround.position.y = y;
                 scene.add(tmpGround);
+                groundTiles.push([x, y]);
             }
             else
                 noGround.push([x, y]);
         }
     }
+    console.log(noGround)
+    console.log(groundTiles)
 }
 
-function Lighht(name, color, position)
+function Light(name, color, position)
 {
-    pointLight = new THREE.PointLight(color, 50, 350);
+    pointLight = new THREE.PointLight(color, 50, 1000);
 
     pointLight.position.x = position.split(',')[0];
     pointLight.position.y = position.split(',')[1];
